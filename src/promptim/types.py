@@ -20,11 +20,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_PROMPT_MODEL_CONFIG = {"model": "claude-3-5-haiku-20241022"}
-DEFAULT_OPTIMIZER_MODEL_CONFIG = {
-    "model": "claude-3-5-sonnet-20241022",
-    "max_tokens_to_sample": 8192,
-}
 
 
 SystemType = Callable[[ChatPromptTemplate, dict], dict]

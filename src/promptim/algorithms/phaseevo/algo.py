@@ -381,7 +381,7 @@ class PhaseRunner:
                     generated = await self.mutation.mutate(retained, train_examples)
                     candidate_variants = []
                     for prompt in generated:
-                        with ls.tracing_context(tags=["langsmith:hidden"]):
+                        with ls.tracing_context(tags=["langsmith:hidden"], enabled=False):
                             with ls.trace(
                                 "Evaluate Prompt",
                                 inputs={"prompt": prompt.get_prompt_str_in_context()},

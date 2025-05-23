@@ -89,7 +89,7 @@ class MetaPromptSystem:
         dev_batch = list(
             self.trainer.client.list_examples(example_ids=inputs["dev_batch"])
         )
-        with ls.tracing_context(parent={"langsmith-trace": ""}):
+        with ls.tracing_context(parent={"langsmith-trace": ""}, enabled=False):
             initial_results = [
                 r
                 async for r in (
@@ -97,6 +97,7 @@ class MetaPromptSystem:
                         predict,
                         data=train_batch,
                         evaluators=task.evaluators,
+                        upload_results=False
                     )
                 )
             ]
@@ -112,7 +113,7 @@ class MetaPromptSystem:
 
         # Now we actually evaluate based on how well the updated prompt's "improvements"
         # translate to a dev batch
-        with ls.tracing_context(parent={"langsmith-trace": ""}):
+        with ls.tracing_context(parent={"langsmith-trace": ""}, enabled=False):
             initial_dev_results = [
                 r
                 async for r in (
@@ -120,6 +121,7 @@ class MetaPromptSystem:
                         predict,
                         data=dev_batch,
                         evaluators=task.evaluators,
+                        upload_results=False
                     )
                 )
             ]
@@ -128,7 +130,7 @@ class MetaPromptSystem:
         async def predict_new(example_inputs: dict):
             return await task.system_safe(extracted._cached, example_inputs)
 
-        with ls.tracing_context(parent={"langsmith-trace": ""}):
+        with ls.tracing_context(parent={"langsmith-trace": ""}, enabled=False):
             new_results = [
                 r
                 async for r in (
@@ -136,6 +138,7 @@ class MetaPromptSystem:
                         predict_new,
                         data=dev_batch,
                         evaluators=task.evaluators,
+                        upload_results=False
                     )
                 )
             ]

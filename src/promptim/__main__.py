@@ -179,7 +179,7 @@ async def run(
         experiment_dir=experiment_dir,
     )
 
-    with ls.tracing_context(project_name="Optim"):
+    with ls.tracing_context(project_name="default", enabled=False):
         prompt, score = await optimizer.train(
             task,
             annotation_queue=annotation_queue,

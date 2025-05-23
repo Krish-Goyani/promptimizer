@@ -100,7 +100,7 @@ class MetaPromptOptimizer(optimizers.BaseOptimizer):
         self.meta_prompt = meta_prompt or DEFAULT_METAPROMPT
         self.max_reasoning_steps = max_reasoning_steps
 
-    @ls.traceable(run_type="prompt", name="meta_prompt")
+    #(run_type="prompt", name="meta_prompt")
     def format(self, **kwargs):
         return self.meta_prompt.format(**kwargs)
 
@@ -122,7 +122,7 @@ class MetaPromptOptimizer(optimizers.BaseOptimizer):
             formatted.append("---")
         return "\n".join(formatted)
 
-    @ls.traceable
+    #
     async def improve_prompt(
         self,
         history: Sequence[Sequence[pm_types.PromptWrapper]],
@@ -185,7 +185,7 @@ class MetaPromptOptimizer(optimizers.BaseOptimizer):
 
         return [candidate]
 
-    @ls.traceable
+    #
     async def react_agent(
         self, inputs: str, current_prompt, n=5
     ) -> pm_types.OptimizedPromptOutput:
