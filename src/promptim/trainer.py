@@ -83,7 +83,7 @@ class PromptTrainer:
             seed: Random seed for reproducibility
         """
         self.optimizer = optimizer
-        self.client = client or ls.Client()
+        self.client = client or ls.Client(tracing_sampling_rate=0)
         random.seed(seed)
         self.rng = random.Random(seed)
         self.algorithm = algorithm
@@ -134,7 +134,7 @@ class PromptTrainer:
             "algorithm": self.algorithm.config,
         }
 
-    #(name="Train Prompt")
+    #@ls.traceable(name="Train Prompt")
     async def train(
         self,
         task: pm_types.Task,
@@ -380,7 +380,6 @@ class PromptTrainer:
                 debug=debug,
                 system_config=system_config,
                 experiment=baseline_session,
-                upload_results=False
             )
             if experiment_url := _get_url(baseline_session, dev_examples[0].dataset_id):
                 print(f"See baseline experiment at: {experiment_url}")
@@ -421,7 +420,6 @@ class PromptTrainer:
             system_config=system_config,
             experiment=await test_baseline_session_fut,
             num_repetitions=num_repetitions,
-            upload_results=False
         )
         final_test_results = await self._evaluate_prompt(
             best_prompt,
@@ -600,7 +598,7 @@ class PromptTrainer:
 
         return list(results_dict.values()), user_input
 
-    #(process_outputs=lambda _: {})
+    #@ls.traceable(process_outputs=lambda _: {})
     async def _evaluate_prompt(
         self,
         prompt_config: pm_types.PromptWrapper,
@@ -648,7 +646,7 @@ class PromptTrainer:
                 experiment_prefix="Optimizer" if not experiment else None,
                 num_repetitions=num_repetitions,
                 metadata=metadata,
-                upload_results=False,
+                upload_results=upload_results,
             )
         now = datetime.datetime.now(datetime.timezone.utc)
         if results._manager._experiment is not None:
@@ -673,7 +671,7 @@ class PromptTrainer:
     ) -> dict[str, float]:
         """Calculates aggregate scores from evaluation results, grouped by key."""
 
-    #(process_inputs=lambda _: {})
+    #@ls.traceable(process_inputs=lambda _: {})
     async def calculate_scores(
         self,
         results: list[ExperimentResultRow],
@@ -900,61 +898,62 @@ def _create_experiment(
     description: str | None = None,
     metadata: dict | None = None,
 ):
-    """Create a new experiment with an incrementing index in the name.
+    # """Create a new experiment with an incrementing index in the name.
 
-    The naming scheme is: "{experiment_name} [idx]" where idx starts at 1
-    and increments for each existing experiment with the same base name.
-    """
-    from langsmith import utils as ls_utils
+    # The naming scheme is: "{experiment_name} [idx]" where idx starts at 1
+    # and increments for each existing experiment with the same base name.
+    # """
+    # from langsmith import utils as ls_utils
 
-    # Find existing experimens with the same base name
-    existing = list(
-        client.list_projects(
-            reference_dataset_id=dataset_id,
-            name_contains=experiment_name,
-            metadata={"__creation_source": "promptim"},
-        )
-    )
+    # # Find existing experimens with the same base name
+    # existing = list(
+    #     client.list_projects(
+    #         reference_dataset_id=dataset_id,
+    #         name_contains=experiment_name,
+    #         metadata={"__creation_source": "promptim"},
+    #     )
+    # )
 
-    # Extract indices from existing names
-    indices = []
-    for p in existing:
-        try:
-            if p.name.startswith(experiment_name):
-                # Extract [idx] from the end if it exists
-                if match := p.name.strip().split(" ")[-1]:
-                    if match.startswith("[") and match.endswith("]"):
-                        try:
-                            idx = int(match[1:-1])
-                            indices.append(idx)
-                        except ValueError:
-                            continue
-        except (ValueError, IndexError):
-            continue
+    # # Extract indices from existing names
+    # indices = []
+    # for p in existing:
+    #     try:
+    #         if p.name.startswith(experiment_name):
+    #             # Extract [idx] from the end if it exists
+    #             if match := p.name.strip().split(" ")[-1]:
+    #                 if match.startswith("[") and match.endswith("]"):
+    #                     try:
+    #                         idx = int(match[1:-1])
+    #                         indices.append(idx)
+    #                     except ValueError:
+    #                         continue
+    #     except (ValueError, IndexError):
+    #         continue
 
-    # Get next available index
-    next_idx = max(indices, default=-1) + 1
+    # # Get next available index
+    # next_idx = max(indices, default=-1) + 1
 
-    # Create new experiment name with index
-    new_name = f"{experiment_name} [{next_idx}]"
+    # # Create new experiment name with index
+    # new_name = f"{experiment_name} [{next_idx}]"
 
-    num_attempts = 10
-    for attempt in range(num_attempts):
-        try:
-            return client.create_project(
-                new_name,
-                description=description,
-                reference_dataset_id=dataset_id,
-                metadata={"__creation_source": "promptim", **(metadata or {})},
-            )
-        except ls_utils.LangSmithConflictError:
-            # If there's a conflict, increment the index and try again
-            next_idx += 1
-            new_name = f"{experiment_name} [{next_idx}-{uuid.uuid4().hex[:4]}]"
-    raise ValueError(
-        f"Could not find a unique experiment name ({experiment_name})in {num_attempts} attempts."
-        " Please try again with a different experiment name."
-    )
+    # num_attempts = 10
+    # for attempt in range(num_attempts):
+    #     try:
+    #         return client.create_project(
+    #             new_name,
+    #             description=description,
+    #             reference_dataset_id=dataset_id,
+    #             metadata={"__creation_source": "promptim", **(metadata or {})},
+    #         )
+    #     except ls_utils.LangSmithConflictError:
+    #         # If there's a conflict, increment the index and try again
+    #         next_idx += 1
+    #         new_name = f"{experiment_name} [{next_idx}-{uuid.uuid4().hex[:4]}]"
+    # raise ValueError(
+    #     f"Could not find a unique experiment name ({experiment_name})in {num_attempts} attempts."
+    #     " Please try again with a different experiment name."
+    # )
+    pass
 
 
 def _queue(trainer, func: SyncOrAsyncCallable[T], *args, **kwargs) -> asyncio.Future[T]:

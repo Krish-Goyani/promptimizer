@@ -110,7 +110,7 @@ def load_task(name_or_path: str):
         dataset_url = None
         dataset_name = None
     if dataset_url:
-        ls_client = ls.Client()
+        ls_client = ls.Client(tracing_sampling_rate=0)
         ds = ls_client.read_shared_dataset(dataset_url.split("/")[-2])
         dataset_url = ds.url
         dataset_name = ds.name

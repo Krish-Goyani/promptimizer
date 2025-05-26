@@ -115,7 +115,7 @@ if __name__ == "__main__":
 
     import langsmith as ls
 
-    c = ls.Client()
+    c = ls.Client(tracing_sampling_rate=0)
     examples = list(
         c.list_examples(dataset_name="customer-support-bot.test_extraction")
     )

@@ -17,7 +17,7 @@ class MinibatchAlgorithm(BaseAlgorithm[AlgorithmConfig]):
     This preserves the original optimize_prompt behavior.
     """
 
-    #(name="MinibatchAlgorithm.run")
+    #@ls.traceable(name="MinibatchAlgorithm.run")
     async def run(
         self,
         trainer: PromptTrainer,

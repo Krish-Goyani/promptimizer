@@ -20,6 +20,11 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+DEFAULT_PROMPT_MODEL_CONFIG = {"model": "claude-3-5-haiku-20241022"}
+DEFAULT_OPTIMIZER_MODEL_CONFIG = {
+    "model": "claude-3-5-sonnet-20241022",
+    "max_tokens_to_sample": 8192,
+}
 
 
 SystemType = Callable[[ChatPromptTemplate, dict], dict]
@@ -96,7 +101,7 @@ class PromptWrapper(PromptConfig):
                     **(self.model_config or DEFAULT_PROMPT_MODEL_CONFIG)
                 )
             else:
-                client = client or ls.Client()
+                client = client or ls.Client(tracing_sampling_rate=0)
                 postlude = None
                 prompt = client.pull_prompt(self.identifier, include_model=True)
                 if isinstance(prompt, RunnableSequence):
@@ -226,7 +231,7 @@ class PromptWrapper(PromptConfig):
     ) -> str:
         if not self.upload_to:
             raise ValueError("Cannot push prompt without an upload target.")
-        client = client or ls.Client()
+        client = client or ls.Client(tracing_sampling_rate=0)
         prompt = self.load(client)
         identifier = self.upload_to.rsplit(":", maxsplit=1)[0]
         try:

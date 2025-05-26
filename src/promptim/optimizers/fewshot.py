@@ -51,7 +51,7 @@ class FewShotOptimizer(optimizers.BaseOptimizer):
 
         self.sampler = TPESampler(seed=42)
 
-    #
+    #@ls.traceable
     async def improve_prompt(
         self,
         history: List[List[pm_types.PromptWrapper]],
@@ -84,7 +84,7 @@ class FewShotOptimizer(optimizers.BaseOptimizer):
         async with ls.trace("FewShotOptimization") as run_tree:
 
             # This objective is called once per trial, with a new "Trial" each time
-            #
+            #@ls.traceable
             async def objective(trial: Trial) -> float:
                 nonlocal best_prompt, best_score
 

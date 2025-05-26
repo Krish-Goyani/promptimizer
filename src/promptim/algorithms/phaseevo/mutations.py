@@ -121,7 +121,7 @@ class LamarckianMutation(Mutation):
         self.population_size = population_size
         self.batch_size = batch_size
 
-    #
+    #@ls.traceable
     async def mutate(
         self, population: list[Variant], train_examples: list[pm_types.Example]
     ) -> list[pm_types.PromptWrapper]:
@@ -153,7 +153,7 @@ class LamarckianMutation(Mutation):
             for example in examples
         )
 
-    #
+    #@ls.traceable
     async def mutate_single(
         self, prompt: pm_types.PromptWrapper, examples: list[pm_types.Example]
     ) -> pm_types.PromptWrapper:
@@ -194,7 +194,7 @@ class GradientDescentMutation(Mutation):
         self.max_batch_size = max_batch_size
         self.passing_num = 5
 
-    #
+    #@ls.traceable
     async def mutate(
         self, population: list[Variant], train_examples: list[pm_types.Example]
     ) -> list[pm_types.PromptWrapper]:
@@ -216,7 +216,7 @@ class GradientDescentMutation(Mutation):
             if isinstance(p, pm_types.PromptWrapper)
         ]
 
-    #
+    #@ls.traceable
     async def mutate_single(self, variant: Variant) -> pm_types.PromptWrapper:
         failing_examples = self._format_failing_examples(variant.results)
         passing_examples = self._format_passing_examples(variant.results)
@@ -431,7 +431,7 @@ class SemanticMutation(Mutation):
         self.population_limit = population_limit
         self.techniques = PROMPT_TECHNIQUES
 
-    #
+    #@ls.traceable
     async def mutate(
         self, population: list[Variant], train_examples: list[pm_types.Example]
     ) -> list[pm_types.PromptWrapper]:
@@ -454,7 +454,7 @@ class SemanticMutation(Mutation):
             result for result in results if isinstance(result, pm_types.PromptWrapper)
         ]
 
-    #
+    @ls.traceable
     async def mutate_single(
         self, variant: Variant, technique: str
     ) -> pm_types.PromptWrapper:
@@ -523,7 +523,7 @@ class EdaMutation(Mutation):
         random.shuffle(cluster)
         return cluster
 
-    #
+    #@ls.traceable
     async def mutate(
         self, population: list[Variant], train_examples: list[pm_types.Example]
     ) -> list[pm_types.PromptWrapper]:
@@ -612,14 +612,14 @@ class CrossoverMutation(Mutation):
         src = sorted(population, key=lambda v: v.fitness, reverse=True)
         return [(src[0], src[2])]
 
-    #
+    #@ls.traceable
     async def mutate(
         self, population: list[Variant], train_examples: list[pm_types.Example]
     ) -> list[pm_types.PromptWrapper]:
         pairs = self.produce_pairs(population)
         return await asyncio.gather(*(self.merge(pair) for pair in pairs))
 
-    #
+    #@ls.traceable
     async def merge(self, pair: tuple[Variant, Variant]) -> pm_types.PromptWrapper:
         cluster_prompts = [v.prompt.get_prompt_str_in_context() for v in pair]
         existing_prompts = "\n".join(cluster_prompts)
