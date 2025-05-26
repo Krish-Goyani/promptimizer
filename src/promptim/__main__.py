@@ -137,7 +137,7 @@ async def run(
     epochs: int,
     annotation_queue: Optional[str] = None,
     debug: bool = False,
-    commit: bool = True,
+    commit: bool = False,
     patch: dict | None = None,
 ):
     task, config, experiment_parent = load_task(task_name)
@@ -183,7 +183,7 @@ async def run(
         prompt, score = await optimizer.train(
             task,
             annotation_queue=annotation_queue,
-            commit_prompts=commit,
+            commit_prompts=False,
         )
     if commit and task.initial_prompt.identifier is not None:
         prompt.push_prompt(
@@ -327,7 +327,7 @@ def train(
                 epochs=epochs,
                 annotation_queue=annotation_queue,
                 debug=debug,
-                commit=not no_commit,
+                commit=False,
                 patch=patch,
             )
             results.append((folder, patch, prompt_config, prompt, score))

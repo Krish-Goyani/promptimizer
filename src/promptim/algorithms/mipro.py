@@ -131,7 +131,7 @@ class MIPROAlgorithm(BaseAlgorithm[MiproAlgorithmConfig]):
         )
 
         if commit_prompts:
-            best_prompt.push_prompt(client=trainer.client)
+            pass
 
         return best_prompt, final_score
 

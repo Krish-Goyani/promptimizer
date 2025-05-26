@@ -166,11 +166,12 @@ class PromptTrainer:
         # Initialize the prompt(s)
         for prompt in initial_population:
             if prompt.prompt_str and commit_prompts:
-                richprint(
-                    "[yellow]Warning: No prompt identifier is configured for this run. "
-                    "Prompts will not be committed.[/yellow]"
-                )
-                commit_prompts = False
+                # richprint(
+                #     "[yellow]Warning: No prompt identifier is configured for this run. "
+                #     "Prompts will not be committed.[/yellow]"
+                # )
+                # commit_prompts = False
+                pass
             if task.system is None:
                 task.system = task.get_prompt_system(prompt)
             prompt.load(self.client)
@@ -201,7 +202,7 @@ class PromptTrainer:
             annotation_queue=annotation_queue,
             train_examples=train_examples,
             dev_examples=dev_examples,
-            commit_prompts=commit_prompts,
+            commit_prompts=False,
             experiment_name=experiment_name,
             baseline_scores=baseline_scores,
             baseline_experiment_results=baseline_experiment_results,
@@ -259,7 +260,7 @@ class PromptTrainer:
             initial_population=[initial_prompt],
             system_config=system_config,
             annotation_queue=annotation_queue,
-            commit_prompts=commit_prompts,
+            commit_prompts=False,
             experiment_name=experiment_name,
         )
 
