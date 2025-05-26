@@ -169,11 +169,11 @@ The prompt predicted: {example['run'].outputs}
             ]
             for example in failing_examples
         ]
-        with ls.trace(
-            name="Analyze examples", inputs={"num_examples": len(failing_examples)}
-        ):
-            results_ = await advisor.abatch(advisor_inputs)
-            recommendations = cast(list[Advise], [r["responses"][0] for r in results_])
+        # with ls.trace(
+        #     name="Analyze examples", inputs={"num_examples": len(failing_examples)}
+        # ):
+        results_ = await advisor.abatch(advisor_inputs)
+        recommendations = cast(list[Advise], [r["responses"][0] for r in results_])
 
         # 4. Format recommendations into a consolidated string
         formatted_recommendations = []
@@ -201,12 +201,12 @@ The prompt predicted: {example['run'].outputs}
                 else "N/A"
             ),
         }
-        with ls.trace("Apply Recommendations", inputs=inputs) as rt:
-            prompt_output = await chain.ainvoke(self.meta_prompt.format(**inputs))
-            prompt_output = cast(
-                pm_types.OptimizedPromptOutput, prompt_output["responses"][0]
-            )
-            rt.add_outputs({"prompt_output": prompt_output})
+        # with ls.trace("Apply Recommendations", inputs=inputs) as rt:
+        prompt_output = await chain.ainvoke(self.meta_prompt.format(**inputs))
+        prompt_output = cast(
+            pm_types.OptimizedPromptOutput, prompt_output["responses"][0]
+        )
+            # rt.add_outputs({"prompt_output": prompt_output})
 
         candidate = pm_types.PromptWrapper.from_prior(
             current_prompt, prompt_output.improved_prompt

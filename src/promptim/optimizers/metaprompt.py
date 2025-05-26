@@ -144,33 +144,33 @@ class MetaPromptOptimizer(optimizers.BaseOptimizer):
         )[-5:]
 
         annotated_results = self._format_results(results)
-        async with ls.trace("Optimize") as rt:
-            print(f"Optimizing with url {rt.get_url()}", flush=True)
-            formatted = current_prompt.get_prompt_str_in_context()
-            hypo = (
-                current_prompt.extra.get("hypothesis") if current_prompt.extra else None
-            )
-            if hypo:
-                hypo = "Hypothesis for this prompt: " + hypo
-            inputs = self.format(
-                current_prompt=formatted,
-                current_hypo=hypo or "",
-                annotated_results=annotated_results,
-                task_description=task.describe(),
-                other_attempts=(
-                    "\n\n---".join(
-                        [
-                            f"<hypothesis ix={i}>{hypo}</hypothesis>"
-                            f"<attempt ix={i}>\n{p.get_prompt_str()}\n</attempt>"
-                            for i, (p, hypo) in enumerate(other_attempts)
-                        ]
-                    )
-                    if other_attempts
-                    else "N/A"
-                ),
-            )
-            prompt_output = await self.react_agent(inputs, current_prompt)
-            rt.add_outputs({"output": prompt_output})
+        # async with ls.trace("Optimize") as rt:
+        #     print(f"Optimizing with url {rt.get_url()}", flush=True)
+        formatted = current_prompt.get_prompt_str_in_context()
+        hypo = (
+            current_prompt.extra.get("hypothesis") if current_prompt.extra else None
+        )
+        if hypo:
+            hypo = "Hypothesis for this prompt: " + hypo
+        inputs = self.format(
+            current_prompt=formatted,
+            current_hypo=hypo or "",
+            annotated_results=annotated_results,
+            task_description=task.describe(),
+            other_attempts=(
+                "\n\n---".join(
+                    [
+                        f"<hypothesis ix={i}>{hypo}</hypothesis>"
+                        f"<attempt ix={i}>\n{p.get_prompt_str()}\n</attempt>"
+                        for i, (p, hypo) in enumerate(other_attempts)
+                    ]
+                )
+                if other_attempts
+                else "N/A"
+            ),
+        )
+        prompt_output = await self.react_agent(inputs, current_prompt)
+        # rt.add_outputs({"output": prompt_output})
         candidate = pm_types.PromptWrapper.from_prior(
             current_prompt,
             prompt_output.improved_prompt,

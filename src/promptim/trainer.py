@@ -622,10 +622,10 @@ class PromptTrainer:
         async def predict(inputs: dict):
             stack = AsyncExitStack()
             prt = None
-            if not upload_results:
-                prt = await stack.enter_async_context(
-                    ls.trace("predict", inputs=inputs, parent=rt)
-                )
+            # if not upload_results:
+            #     prt = await stack.enter_async_context(
+            #         ls.trace("predict", inputs=inputs, parent=rt)
+            #     )
             async with stack:
                 if system_config:
                     result = await task.system_safe(prompt, inputs, **system_config)

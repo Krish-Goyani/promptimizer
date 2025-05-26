@@ -158,25 +158,25 @@ class LamarckianMutation(Mutation):
         self, prompt: pm_types.PromptWrapper, examples: list[pm_types.Example]
     ) -> pm_types.PromptWrapper:
         formatted = self._format_examples(examples)
-        with ls.trace(name="Lamarckian Mutation", inputs={"examples": formatted}) as rt:
-            prompt_response = await create_extractor(
-                self.model,
-                tools=[pm_types.prompt_schema(prompt)],
-                tool_choice="OptimizedPromptOutput",
-            ).ainvoke(
-                [
-                    (
-                        "system",
-                        "You are a prompt generator. "
-                        "Write an f-string prompt based on the provided examples. Every input key should be included in the prompt in brackets.",
-                    ),
-                    ("user", LAMARCKIAN_MUTATION_PROMPT.format(examples=formatted)),
-                ]
-            )
-            prompt_output = cast(
-                pm_types.OptimizedPromptOutput, prompt_response["responses"][0]
-            )
-            rt.add_outputs({"output": prompt_output})
+        # with ls.trace(name="Lamarckian Mutation", inputs={"examples": formatted}) as rt:
+        prompt_response = await create_extractor(
+            self.model,
+            tools=[pm_types.prompt_schema(prompt)],
+            tool_choice="OptimizedPromptOutput",
+        ).ainvoke(
+            [
+                (
+                    "system",
+                    "You are a prompt generator. "
+                    "Write an f-string prompt based on the provided examples. Every input key should be included in the prompt in brackets.",
+                ),
+                ("user", LAMARCKIAN_MUTATION_PROMPT.format(examples=formatted)),
+            ]
+        )
+        prompt_output = cast(
+            pm_types.OptimizedPromptOutput, prompt_response["responses"][0]
+        )
+        # rt.add_outputs({"output": prompt_output})
         return pm_types.PromptWrapper.from_prior(prompt, prompt_output.improved_prompt)
 
 
@@ -235,43 +235,43 @@ class GradientDescentMutation(Mutation):
             random.shuffle(failing_examples)
             failing_examples = failing_examples[: self.max_batch_size]
         existing_prompt = variant.prompt.get_prompt_str_in_context()
-        with ls.trace(
-            name="Compute Gradient",
-            inputs={
-                "failing_examples": "\n".join(failing_examples),
-                "passing_examples": passing_examples,
-                "existing_prompt": existing_prompt,
-                "previous_analysis": previous_analysis,
-            },
-        ) as rt:
-            advice_msg = await self.model.ainvoke(
-                GRADIENT_DESCENT_GENERATION_PROMPT.format(
-                    existing_prompt=existing_prompt,
-                    failing_examples="\n".join(failing_examples),
-                    passing_examples=passing_examples,
-                    previous_analysis=previous_analysis,
-                )
+        # with ls.trace(
+        #     name="Compute Gradient",
+        #     inputs={
+        #         "failing_examples": "\n".join(failing_examples),
+        #         "passing_examples": passing_examples,
+        #         "existing_prompt": existing_prompt,
+        #         "previous_analysis": previous_analysis,
+        #     },
+        # ) as rt:
+        advice_msg = await self.model.ainvoke(
+            GRADIENT_DESCENT_GENERATION_PROMPT.format(
+                existing_prompt=existing_prompt,
+                failing_examples="\n".join(failing_examples),
+                passing_examples=passing_examples,
+                previous_analysis=previous_analysis,
             )
-            rt.add_outputs({"output": advice_msg})
-        with ls.trace(
-            name="Apply Gradient",
-            inputs={"existing_prompt": existing_prompt, "feedback": advice_msg.content},
-        ):
-            chain = create_extractor(
-                self.model,
-                tools=[pm_types.prompt_schema(variant.prompt)],
-                tool_choice="OptimizedPromptOutput",
+        )
+        # rt.add_outputs({"output": advice_msg})
+        # with ls.trace(
+        #     name="Apply Gradient",
+        #     inputs={"existing_prompt": existing_prompt, "feedback": advice_msg.content},
+        # ):
+        chain = create_extractor(
+            self.model,
+            tools=[pm_types.prompt_schema(variant.prompt)],
+            tool_choice="OptimizedPromptOutput",
+        )
+        prompt_output = await chain.ainvoke(
+            GRADIENT_DESCENT_APPLICATION_PROMPT.format(
+                existing_prompt=existing_prompt,
+                feedback=advice_msg.content,
             )
-            prompt_output = await chain.ainvoke(
-                GRADIENT_DESCENT_APPLICATION_PROMPT.format(
-                    existing_prompt=existing_prompt,
-                    feedback=advice_msg.content,
-                )
-            )
-            prompt_output = cast(
-                pm_types.OptimizedPromptOutput, prompt_output["responses"][0]
-            )
-            rt.add_outputs({"output": prompt_output})
+        )
+        prompt_output = cast(
+            pm_types.OptimizedPromptOutput, prompt_output["responses"][0]
+        )
+        # rt.add_outputs({"output": prompt_output})
 
         previous_analysis = previous_analysis_list or []
         previous_analysis.append(prompt_output.analysis)
@@ -460,23 +460,23 @@ class SemanticMutation(Mutation):
     ) -> pm_types.PromptWrapper:
         existing_prompt = variant.prompt.get_prompt_str_in_context()
 
-        with ls.trace(
-            name="Semantic Mutation",
-            inputs={"existing_prompt": existing_prompt, "technique": technique},
-        ) as rt:
-            prompt_output = await create_extractor(
-                self.model,
-                tools=[pm_types.prompt_schema(variant.prompt)],
-                tool_choice="OptimizedPromptOutput",
-            ).ainvoke(
-                SEMANTIC_MUTATION_PROMPT.format(
-                    existing_prompt=existing_prompt, technique=technique
-                )
+        # with ls.trace(
+        #     name="Semantic Mutation",
+        #     inputs={"existing_prompt": existing_prompt, "technique": technique},
+        # ) as rt:
+        prompt_output = await create_extractor(
+            self.model,
+            tools=[pm_types.prompt_schema(variant.prompt)],
+            tool_choice="OptimizedPromptOutput",
+        ).ainvoke(
+            SEMANTIC_MUTATION_PROMPT.format(
+                existing_prompt=existing_prompt, technique=technique
             )
-            prompt_output = cast(
-                pm_types.OptimizedPromptOutput, prompt_output["responses"][0]
-            )
-            rt.add_outputs({"output": prompt_output})
+        )
+        prompt_output = cast(
+            pm_types.OptimizedPromptOutput, prompt_output["responses"][0]
+        )
+        # rt.add_outputs({"output": prompt_output})
 
         candidate = pm_types.PromptWrapper.from_prior(
             variant.prompt, prompt_output.improved_prompt
@@ -545,19 +545,19 @@ class EdaMutation(Mutation):
         cluster = self._prepare_cluster(cluster)
         cluster_prompts = [v.prompt.get_prompt_str_in_context() for v in cluster]
         existing_prompts = "\n".join(cluster_prompts)
-        with ls.trace(
-            name="Semantic Mutation",
-            inputs={"existing_prompts": existing_prompts},
-        ) as rt:
-            prompt_output = await create_extractor(
-                self.model,
-                tools=[pm_types.prompt_schema(cluster[0].prompt)],
-                tool_choice="OptimizedPromptOutput",
-            ).ainvoke(self.prompt.format(existing_prompts=existing_prompts))
-            prompt_output = cast(
-                pm_types.OptimizedPromptOutput, prompt_output["responses"][0]
-            )
-            rt.add_outputs({"output": prompt_output})
+        # with ls.trace(
+        #     name="Semantic Mutation",
+        #     inputs={"existing_prompts": existing_prompts},
+        # ) as rt:
+        prompt_output = await create_extractor(
+            self.model,
+            tools=[pm_types.prompt_schema(cluster[0].prompt)],
+            tool_choice="OptimizedPromptOutput",
+        ).ainvoke(self.prompt.format(existing_prompts=existing_prompts))
+        prompt_output = cast(
+            pm_types.OptimizedPromptOutput, prompt_output["responses"][0]
+        )
+            # rt.add_outputs({"output": prompt_output})
 
         candidate = pm_types.PromptWrapper.from_prior(
             cluster[0].prompt, prompt_output.improved_prompt
@@ -623,23 +623,23 @@ class CrossoverMutation(Mutation):
     async def merge(self, pair: tuple[Variant, Variant]) -> pm_types.PromptWrapper:
         cluster_prompts = [v.prompt.get_prompt_str_in_context() for v in pair]
         existing_prompts = "\n".join(cluster_prompts)
-        with ls.trace(
-            name="Semantic Mutation",
-            inputs={"existing_prompts": existing_prompts},
-        ) as rt:
-            prompt_output = await create_extractor(
-                self.model,
-                tools=[pm_types.prompt_schema(pair[0].prompt)],
-                tool_choice="OptimizedPromptOutput",
-            ).ainvoke(
-                self.prompt.format(
-                    prompt_1=cluster_prompts[0], prompt_2=cluster_prompts[1]
-                )
+        # with ls.trace(
+        #     name="Semantic Mutation",
+        #     inputs={"existing_prompts": existing_prompts},
+        # ) as rt:
+        prompt_output = await create_extractor(
+            self.model,
+            tools=[pm_types.prompt_schema(pair[0].prompt)],
+            tool_choice="OptimizedPromptOutput",
+        ).ainvoke(
+            self.prompt.format(
+                prompt_1=cluster_prompts[0], prompt_2=cluster_prompts[1]
             )
-            prompt_output = cast(
-                pm_types.OptimizedPromptOutput, prompt_output["responses"][0]
-            )
-            rt.add_outputs({"output": prompt_output})
+        )
+        prompt_output = cast(
+            pm_types.OptimizedPromptOutput, prompt_output["responses"][0]
+        )
+        # rt.add_outputs({"output": prompt_output})
 
         candidate = pm_types.PromptWrapper.from_prior(
             pair[0].prompt, prompt_output.improved_prompt

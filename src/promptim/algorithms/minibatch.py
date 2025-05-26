@@ -140,7 +140,7 @@ class MinibatchAlgorithm(BaseAlgorithm[AlgorithmConfig]):
                             task,
                             progress,
                         )
-                        if next_action != "continue":
+                        if next_action != "continue" and next_action != "c":
                             break
                     train_scores = await trainer.calculate_scores(results)
                     train_score = (
