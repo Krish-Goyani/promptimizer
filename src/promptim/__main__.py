@@ -179,17 +179,17 @@ async def run(
         experiment_dir=experiment_dir,
     )
 
-    with ls.tracing_context(project_name="default", enabled=False):
-        prompt, score = await optimizer.train(
-            task,
-            annotation_queue=annotation_queue,
-            commit_prompts=False,
-        )
-    if commit and task.initial_prompt.identifier is not None:
-        prompt.push_prompt(
-            include_model_info=True,
-            client=optimizer.client,
-        )
+    # with ls.tracing_context(project_name="default", enabled=False):
+    prompt, score = await optimizer.train(
+        task,
+        annotation_queue=annotation_queue,
+        commit_prompts=False,
+    )
+    # if commit and task.initial_prompt.identifier is not None:
+    #     prompt.push_prompt(
+    #         include_model_info=True,
+    #         client=optimizer.client,
+    #     )
 
     return experiment_dir, config, prompt, score
 

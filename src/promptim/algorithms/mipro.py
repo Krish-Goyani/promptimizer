@@ -130,8 +130,6 @@ class MIPROAlgorithm(BaseAlgorithm[MiproAlgorithmConfig]):
             trainer, best_prompt, task, dev_examples, system_config
         )
 
-        if commit_prompts:
-            pass
 
         return best_prompt, final_score
 

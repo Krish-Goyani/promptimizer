@@ -164,8 +164,6 @@ class MinibatchAlgorithm(BaseAlgorithm[AlgorithmConfig]):
                         )
                         history[-1].extend(improved)
 
-                        if commit_prompts:
-                            pass
                     except Exception as e:
                         progress.console.print(
                             f"Failed to improve prompt: {e}", style="red"
