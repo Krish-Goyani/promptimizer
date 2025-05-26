@@ -238,9 +238,7 @@ The promptim library is a sophisticated prompt optimization framework built by L
 **Best for**: Addressing specific failure patterns and edge cases
 
 ### 4. Debate Optimizer (Experimental)
-**File**: `optimizers/debate.py`
 **Purpose**: Uses multi-agent debate to identify and fix prompt vulnerabilities
-**Note**: Not included in main `__init__.py`, appears to be experimental
 
 **How it works**:
 1. **Vulnerability Identification**: Identifies potential prompt weaknesses
