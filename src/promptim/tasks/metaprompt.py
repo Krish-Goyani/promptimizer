@@ -97,6 +97,7 @@ class MetaPromptSystem:
                         predict,
                         data=train_batch,
                         evaluators=task.evaluators,
+                        upload_results=False
                     )
                 )
             ]
@@ -120,6 +121,7 @@ class MetaPromptSystem:
                         predict,
                         data=dev_batch,
                         evaluators=task.evaluators,
+                        upload_results=False
                     )
                 )
             ]
@@ -136,6 +138,7 @@ class MetaPromptSystem:
                         predict_new,
                         data=dev_batch,
                         evaluators=task.evaluators,
+                        upload_results=False
                     )
                 )
             ]

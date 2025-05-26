@@ -134,7 +134,7 @@ class PromptTrainer:
             "algorithm": self.algorithm.config,
         }
 
-    #@ls.traceable(name="Train Prompt")
+    #(name="Train Prompt")
     async def train(
         self,
         task: pm_types.Task,
@@ -380,6 +380,7 @@ class PromptTrainer:
                 debug=debug,
                 system_config=system_config,
                 experiment=baseline_session,
+                upload_results=False
             )
             if experiment_url := _get_url(baseline_session, dev_examples[0].dataset_id):
                 print(f"See baseline experiment at: {experiment_url}")
@@ -420,6 +421,7 @@ class PromptTrainer:
             system_config=system_config,
             experiment=await test_baseline_session_fut,
             num_repetitions=num_repetitions,
+            upload_results=False
         )
         final_test_results = await self._evaluate_prompt(
             best_prompt,
@@ -598,7 +600,7 @@ class PromptTrainer:
 
         return list(results_dict.values()), user_input
 
-    #@ls.traceable(process_outputs=lambda _: {})
+    #(process_outputs=lambda _: {})
     async def _evaluate_prompt(
         self,
         prompt_config: pm_types.PromptWrapper,
@@ -646,7 +648,7 @@ class PromptTrainer:
                 experiment_prefix="Optimizer" if not experiment else None,
                 num_repetitions=num_repetitions,
                 metadata=metadata,
-                upload_results=upload_results,
+                upload_results=False,
             )
         now = datetime.datetime.now(datetime.timezone.utc)
         if results._manager._experiment is not None:
@@ -671,7 +673,7 @@ class PromptTrainer:
     ) -> dict[str, float]:
         """Calculates aggregate scores from evaluation results, grouped by key."""
 
-    #@ls.traceable(process_inputs=lambda _: {})
+    #(process_inputs=lambda _: {})
     async def calculate_scores(
         self,
         results: list[ExperimentResultRow],
@@ -898,11 +900,11 @@ def _create_experiment(
     description: str | None = None,
     metadata: dict | None = None,
 ):
-    # """Create a new experiment with an incrementing index in the name.
+    """Create a new experiment with an incrementing index in the name.
 
-    # The naming scheme is: "{experiment_name} [idx]" where idx starts at 1
-    # and increments for each existing experiment with the same base name.
-    # """
+    The naming scheme is: "{experiment_name} [idx]" where idx starts at 1
+    and increments for each existing experiment with the same base name.
+    """
     # from langsmith import utils as ls_utils
 
     # # Find existing experimens with the same base name

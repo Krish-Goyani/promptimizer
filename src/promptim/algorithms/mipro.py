@@ -50,7 +50,7 @@ class MIPROAlgorithm(BaseAlgorithm[MiproAlgorithmConfig]):
 
     config_cls = MiproAlgorithmConfig
 
-    #@ls.traceable(name="MIPRO.run")
+    #(name="MIPRO.run")
     async def run(
         self,
         trainer: PromptTrainer,
@@ -135,7 +135,7 @@ class MIPROAlgorithm(BaseAlgorithm[MiproAlgorithmConfig]):
 
         return best_prompt, final_score
 
-    #@ls.traceable
+    #
     async def _synth_fewshots(
         self,
         trainer: PromptTrainer,
@@ -193,7 +193,7 @@ class MIPROAlgorithm(BaseAlgorithm[MiproAlgorithmConfig]):
 
         return all_candidates, max_errors
 
-    #@ls.traceable
+    #
     async def _build_fewshots(
         self,
         trainer: PromptTrainer,
@@ -221,7 +221,7 @@ class MIPROAlgorithm(BaseAlgorithm[MiproAlgorithmConfig]):
 
         return labeled_examples + teacher_examples
 
-    #@ls.traceable
+    #
     async def _call_teacher_for_synth_fewshots(
         self,
         trainer: PromptTrainer,
@@ -251,7 +251,7 @@ class MIPROAlgorithm(BaseAlgorithm[MiproAlgorithmConfig]):
             teacher_examples.append(new_ex)
         return teacher_examples
 
-    #@ls.traceable
+    #
     async def _propose_instructions(
         self,
         trainer: PromptTrainer,
@@ -309,7 +309,7 @@ class MIPROAlgorithm(BaseAlgorithm[MiproAlgorithmConfig]):
 
         return list(instructions.values())
 
-        # @ls.traceable
+        # #
         # async def _propose_instructions(
         #     self,
         #     trainer: "PromptTrainer",
@@ -394,7 +394,7 @@ class MIPROAlgorithm(BaseAlgorithm[MiproAlgorithmConfig]):
 
         #     return final_instructions
 
-    #@ls.traceable
+    #
     async def _build_data_summary(
         self,
         baseline_prompt: pm_types.PromptWrapper,
@@ -475,7 +475,7 @@ class MIPROAlgorithm(BaseAlgorithm[MiproAlgorithmConfig]):
                 messages.append({"role": "tool", "content": "", "tool_call_id": id_})
         return data_summary
 
-    #@ls.traceable
+    #
     async def _optimize_prompt_parameters(
         self,
         trainer: PromptTrainer,

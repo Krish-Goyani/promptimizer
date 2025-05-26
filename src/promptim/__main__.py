@@ -676,7 +676,7 @@ def create_task(
     from langchain_core.prompts.structured import StructuredPrompt
     from langsmith import Client
 
-    client = Client()
+    client = Client(tracing_sampling_rate=0)
     if not client.api_key:
         raise ValueError("LANGSMITH_API_KEY required to create the task.")
     if name is None:
@@ -853,7 +853,7 @@ def create_example_task(path: str, name: str):
     # Create example dataset
     from langsmith import Client
 
-    client = Client()
+    client = Client(tracing_sampling_rate=0)
     if not client.api_key:
         raise ValueError("LANGSMITH_API_KEY required to create the example tweet task.")
     prompt = client.pull_prompt("langchain-ai/tweet-generator-example:c39837bd")
