@@ -343,8 +343,19 @@ def train(
     print("Results:")
     for folder, _, _, prompt, score in results:
         print(f"- Score: {score:.4f} | {folder}| Prompt:\n{prompt.get_prompt_str()}")
+        # Save prompt to txt file in the experiment folder
+        prompt_file_path = "optimized_prompt.txt"
+        with open(prompt_file_path, "w", encoding="utf-8") as f:
+            f.write(prompt.get_prompt_str())
+        print(f"  Prompt saved to: {prompt_file_path}")
+    
     if len(results) > 1:
         print(f"\nBest prompt:\n{results[0][-2].get_prompt_str()}\n\n{results[0][0]}")
+        # Save best prompt to txt file in the current directory
+        best_prompt_path = "optimized_prompt.txt"
+        with open(best_prompt_path, "w", encoding="utf-8") as f:
+            f.write(results[0][-2].get_prompt_str())
+        print(f"Best prompt saved to: {best_prompt_path}")
 
 
 @cli.group()
