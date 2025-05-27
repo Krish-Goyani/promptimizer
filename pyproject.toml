@@ -9,7 +9,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "click",
-    "langchain @ git+https://github.com/Krish-Goyani/langchain_v0.git",
+    "langchain",
     "langchain-groq @ git+https://github.com/Krish-Goyani/langchain-groq.git",
     "langchain-anthropic>=0.3",
     "langsmith @ git+https://github.com/Krish-Goyani/langsmith-sdk.git@main", 
